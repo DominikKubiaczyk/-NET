@@ -82,7 +82,7 @@ namespace demo.Tools
 
         [Route("long-action")]
         public async Task<List<int>> LongAction(CancellationToken cancel) {
-            List<int> list = await Task.Run(() => createPrimeInts(1000, cancel), cancel);
+            List<int> list = await Task.Run(() => createPrimeInts(100000, cancel), cancel);
             if(!cancel.IsCancellationRequested){
                 return list;
             }
