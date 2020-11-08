@@ -12,8 +12,8 @@ namespace demo.Domain
         {
             Form = new ExampleForm();
             Countries = new List<SelectListItem>();
-            Countries.Add(new SelectListItem {Text = "Polska", Value = "1"});
-            Countries.Add(new SelectListItem {Text = "Niemcy", Value = "2"});
+            Countries.Add(new SelectListItem {Text = "Polska", Value = "Polska"});
+            Countries.Add(new SelectListItem {Text = "Niemcy", Value = "Niemcy"});
         }
     }
 }

@@ -48,6 +48,7 @@ namespace demo.Controllers
             profile.UserData.Description = "Przykładowy opis";
             profile.UserData.Name = "Nazwa";
             profile.UserData.Surname = "Nazwisko";
+            profile.UserData.Country = "Polska";
             
             return View(profile);
         }
