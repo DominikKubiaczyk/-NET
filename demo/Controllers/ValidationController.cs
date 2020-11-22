@@ -41,12 +41,12 @@ namespace demo.Controllers
         public IActionResult Submit(ExampleForm form)
         {
             var size = form.Files.Sum(f => f.Length);
-            var filePaths = new List<string>();
             foreach (var file in form.Files)
             {
                 Task.Run(() => saveFile(file));
             }
             System.Console.WriteLine("Liczba plików: " + form.Files.Count);
+            System.Console.WriteLine("Rozmiar plików: " + size);
             return RedirectToAction(nameof(Index));
         }
 
