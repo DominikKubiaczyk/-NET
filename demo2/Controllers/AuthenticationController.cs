@@ -52,13 +52,16 @@ namespace demo2.Controllers
 		[HttpPost]
 		[AllowAnonymous]
 		[Route("/logowanie")]
-		public async Task<IActionResult> Login(string username, string password)
+		public async Task<IActionResult> Login(string username, string password, string returnUrl = "")
 		{
 			var result = await this._signInManager.PasswordSignInAsync(username, password, isPersistent: true,
 				lockoutOnFailure: false);
 
 			if (result.Succeeded)
 			{
+				if(returnUrl != ""){
+					return Redirect(returnUrl);
+				}
 				return RedirectToAction(controllerName: "Home", actionName: "Index");
 			} else if (result.IsLockedOut)
 			{
@@ -105,23 +108,45 @@ namespace demo2.Controllers
 
 		private string GenerateToken(string username)
 		{
-			var claims = new Claim[]
+			var symmetricKey = Encoding.UTF8.GetBytes("1234567890123456");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var now = DateTime.UtcNow;
+			var tokenDescriptor = new SecurityTokenDescriptor
 			{
-				new Claim(ClaimTypes.Name, username),
-				new Claim(JwtRegisteredClaimNames.Nbf, new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds()
-				.ToString()),
-				new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddDays(1))
-				.ToUnixTimeMilliseconds().ToString()), 
+				Subject = new ClaimsIdentity(new[]
+				{
+					new Claim(ClaimTypes.Name, username)
+				}),
+				Expires = now.AddDays(1),
+				SigningCredentials = new SigningCredentials(
+					new SymmetricSecurityKey(symmetricKey),
+					SecurityAlgorithms.HmacSha256Signature
+				)
 			};
-			
-			var token = new JwtSecurityToken(new JwtHeader(
-				new SigningCredentials(
-					new SymmetricSecurityKey(
-						Encoding.UTF8.GetBytes("1234567890123456")),
-					SecurityAlgorithms.HmacSha256)
-			), new JwtPayload(claims));
-
-			return new JwtSecurityTokenHandler().WriteToken(token);
+			var stoken = tokenHandler.CreateToken(tokenDescriptor);
+			var token = tokenHandler.WriteToken(stoken);
+			return token;
 		}
+
+		// private string GenerateToken2(string username)
+		// {
+		// 	var claims = new Claim[]
+		// 	{
+		// 		new Claim(ClaimTypes.Name, username),
+		// 		new Claim(JwtRegisteredClaimNames.Nbf, new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds()
+		// 		.ToString()),
+		// 		new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddDays(1))
+		// 		.ToUnixTimeMilliseconds().ToString()), 
+		// 	};
+			
+		// 	var token = new JwtSecurityToken(new JwtHeader(
+		// 		new SigningCredentials(
+		// 			new SymmetricSecurityKey(
+		// 				Encoding.UTF8.GetBytes("1234567890123456")),
+		// 			SecurityAlgorithms.HmacSha256)
+		// 	), new JwtPayload(claims));
+
+		// 	return new JwtSecurityTokenHandler().WriteToken(token);
+		// }
 	}
 }
